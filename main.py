@@ -68,21 +68,29 @@ def is_cooking_recipe(text: str) -> bool:
     return llm_response.startswith('Y')
 
 def get_text_from_webpage(url):
+    blacklist = [
+        '[document]',
+        'noscript',
+        'header',
+        'html',
+        'meta',
+        'head',
+        'input',
+        'script',
+        'style',
+    ]
     try:
         response = requests.get(url)
         soup = BeautifulSoup(response.content, 'html.parser')
         texts = soup.findAll(string=True)
-        return u" ".join(t.strip() for t in texts)
+        output = ''
+        for t in texts:
+            if t.parent.name not in blacklist:
+                output += '{} '.format(t)
+        return output
     except:
         print(f"Could not get text for {url}")
         exit(1)
-
-def get_text_from_plain_url(url):
-    parsed = urllib.parse.urlparse(url)
-    if re.search(r'\.pdf$', parsed.path, re.IGNORECASE) or 'arxiv' in url:
-        return get_text_from_pdf(url)
-    else:
-        return get_text_from_webpage(url)
 
 def get_text_from_pdf(url: str) -> str:
     try:
@@ -119,19 +127,16 @@ def get_text_from_url(url: str) -> str:
     else:
         return get_text_from_webpage(url), 'article'
 
-def summarise_text(text: str) -> str:
-    with open('prompt.txt', 'r') as file:
-        prompt = file.read()
-    prompt = prompt.format(text=text)
+def summarise_text(text: str, prompt: str) -> str:
     summary_agent = Agent(
         'openai:gpt-4o-mini',
         result_type=str,
     )
+    prompt = prompt.format(text=text)
     result = summary_agent.run_sync(prompt)
-    return result
+    return result.data
 
-if __name__ == '__main__':
-    url = sys.argv[1]
+def summarise_url(url: str) -> str:
     text, content_type = get_text_from_url(url)
     if is_cooking_recipe(text):
         content_type = 'recipe'
@@ -143,10 +148,10 @@ if __name__ == '__main__':
         prompt = prompts.recipe_prompt
     else:
         prompt = prompts.article_prompt
-    prompt = prompt.format(text=text)
-    summary_agent = Agent(
-        'openai:gpt-4o-mini',
-        result_type=str,
-    )
-    summary = summary_agent.run_sync(prompt)
-    print(summary.data)
+    summary = summarise_text(text, prompt)
+    return summary
+
+if __name__ == '__main__':
+    url = sys.argv[1]
+    summary = summarise_url(url)
+    print(summary)

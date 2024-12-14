@@ -105,4 +105,10 @@ Can you give me the ingredients (with UK quantities and weights) and the method 
 ingredients in order and the method in order.  Please don't include any preamble or commentary.
 
 If there are any additional notes or tips, please include them at the end of your response.
+
+<recipe-text>
+
+{text}
+
+</recipe-text>
 """

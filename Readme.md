@@ -14,7 +14,7 @@ LLM Summary is a Python-based tool for extracting and summarizing text from vari
 ## Prerequisites
 
 - Python 3.8 or higher
-- `pip` for package management
+- `uv` for package management (https://docs.astral.sh/uv/)
 - An API key for OpenAI to use the language model.
 
 ## Installation
@@ -25,16 +25,9 @@ LLM Summary is a Python-based tool for extracting and summarizing text from vari
    cd llm_summary
    ```
 
-2. Set up a virtual environment (recommended):
+2. Install dependancies:
    ```bash
-   python -m venv venv
-   source venv/bin/activate    # On MacOS/Linux
-   venv\Scripts\activate     # On Windows
-   ```
-
-3. Install dependencies:
-   ```bash
-   pip install -r requirements.txt
+   uv sync
    ```
 
 ## Usage
@@ -42,6 +35,10 @@ LLM Summary is a Python-based tool for extracting and summarizing text from vari
 Run the script with a URL as an argument to extract and summarize its content:
 
 ```bash
+# with uv
+uv run main.py <URL>
+# or more manually
+source .venv/bin/activate
 python main.py <URL>
 ```
 
@@ -49,7 +46,7 @@ python main.py <URL>
 
 To summarize a web article:
 ```bash
-python main.py 'https://example.com/article'
+uv run main.py 'https://example.com/article'
 ```
 
 ### Supported Content Types

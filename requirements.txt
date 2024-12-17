@@ -1,5 +1,0 @@
-pydantic_ai
-youtube_transcript_api
-PyPDF2
-bs4
-requests

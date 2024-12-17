@@ -8,7 +8,7 @@ from pydantic_ai import Agent
 from youtube_transcript_api import YouTubeTranscriptApi
 import sys
 import prompts
-
+import costing
 import re
 
 def is_cooking_recipe(text: str) -> bool:
@@ -127,14 +127,14 @@ def get_text_from_url(url: str) -> str:
     else:
         return get_text_from_webpage(url), 'article'
 
-def summarise_text(text: str, prompt: str) -> str:
+def summarise_text(text: str, prompt: str) -> tuple[str, float]:
     summary_agent = Agent(
         'openai:gpt-4o-mini',
         result_type=str,
     )
     prompt = prompt.format(text=text)
     result = summary_agent.run_sync(prompt)
-    return result.data
+    return result.data, costing.get_cost('openai:gpt-4o-mini', result.cost())
 
 def summarise_url(url: str) -> str:
     text, content_type = get_text_from_url(url)
@@ -148,10 +148,11 @@ def summarise_url(url: str) -> str:
         prompt = prompts.recipe_prompt
     else:
         prompt = prompts.article_prompt
-    summary = summarise_text(text, prompt)
-    return summary
+    summary, cost = summarise_text(text, prompt)
+    return summary, cost
 
 if __name__ == '__main__':
     url = sys.argv[1]
-    summary = summarise_url(url)
+    summary, cost = summarise_url(url)
     print(summary)
+    print(f"\n\n**Cost:** ${cost:.4f}")

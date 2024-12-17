@@ -49,6 +49,25 @@ To summarize a web article:
 uv run main.py 'https://example.com/article'
 ```
 
+### Helper shell function
+For example, in your ~/.bashrc or ~/.zshrc, you can add:
+```bash
+function summarise() {
+    BASEPATH="${HOME}/code/llm_summary"
+    SCRIPT="${BASEPATH}/main.py"
+    if [[ $# -eq 1 ]]; then
+        uv run ${SCRIPT} "$1"
+    else
+        echo "Usage: summarise 'url'"
+    fi
+}
+```
+
+Then once you've sourced your shell file, or opened a new terminal, you can use the `summarise` function to summarise a URL.
+```bash
+summarise 'https://example.com/article'
+```
+
 ### Supported Content Types
 - **Articles**: Summarized as general text.
 - **PDFs**: Extracted and summarized, including support for research papers (e.g., arXiv links).

@@ -122,7 +122,7 @@ def get_transcript_from_youtube(url: str) -> str:
 def get_text_from_url(url: str) -> str:
     if 'youtube.com' in url:
         return get_transcript_from_youtube(url), 'transcript'
-    elif '.pdf' in url or 'arxiv' in url:
+    elif 'pdf' in url or 'arxiv' in url:
         return get_text_from_pdf(url), 'paper'
     else:
         return get_text_from_webpage(url), 'article'

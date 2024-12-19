@@ -47,6 +47,7 @@ python main.py <URL>
 To summarize a web article:
 ```bash
 uv run main.py 'https://example.com/article'
+uv run main.py 'https://example.com/article' 'Give me a bulleted list of the main people mentioned in this article'
 ```
 
 ### Helper shell function
@@ -57,8 +58,10 @@ function summarise() {
     SCRIPT="${BASEPATH}/main.py"
     if [[ $# -eq 1 ]]; then
         uv run ${SCRIPT} "$1"
+    elif [[ $# -eq 2 ]]; then
+        uv run ${SCRIPT} "$1" "$2"
     else
-        echo "Usage: summarise 'url'"
+        echo "Usage: summarise <'url'> ['prompt']"
     fi
 }
 ```

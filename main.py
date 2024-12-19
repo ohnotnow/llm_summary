@@ -136,7 +136,7 @@ def summarise_text(text: str, prompt: str) -> tuple[str, float]:
     result = summary_agent.run_sync(prompt)
     return result.data, costing.get_cost('openai:gpt-4o-mini', result.cost())
 
-def summarise_url(url: str) -> str:
+def summarise_url(url: str, user_prompt: str) -> str:
     text, content_type = get_text_from_url(url)
     if is_cooking_recipe(text):
         content_type = 'recipe'
@@ -148,11 +148,18 @@ def summarise_url(url: str) -> str:
         prompt = prompts.recipe_prompt
     else:
         prompt = prompts.article_prompt
+    if user_prompt:
+        prompt = prompt + "\n\n" + f"The users original question about this content is: {user_prompt}\n\n"
     summary, cost = summarise_text(text, prompt)
     return summary, cost
 
 if __name__ == '__main__':
     url = sys.argv[1]
-    summary, cost = summarise_url(url)
+    # if there are any more arguments, we'll assume they're a prompt by concatenating them
+    if len(sys.argv) > 2:
+        prompt = " ".join(sys.argv[2:])
+    else:
+        prompt = None
+    summary, cost = summarise_url(url, prompt)
     print(summary)
     print(f"\n\n**Cost:** ${cost:.4f}")

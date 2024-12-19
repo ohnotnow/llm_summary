@@ -149,7 +149,7 @@ def summarise_url(url: str, user_prompt: str) -> str:
     else:
         prompt = prompts.article_prompt
     if user_prompt:
-        prompt = prompt + "\n\n" + f"The users original question about this content is: <user-prompt>{user_prompt}</user-prompt>\n\n.  Please answer the question in the context of the content."
+        prompt = prompt + "\n\n" + f"The users original question about this content is: <user-prompt>{user_prompt}</user-prompt>\n\n.  Please include an extra section at the end of your response that answers the question in the context of the content."
     summary, cost = summarise_text(text, prompt)
     return summary, cost
 

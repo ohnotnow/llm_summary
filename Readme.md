@@ -56,6 +56,7 @@ For example, in your ~/.bashrc or ~/.zshrc, you can add:
 function summarise() {
     BASEPATH="${HOME}/code/llm_summary"
     SCRIPT="${BASEPATH}/main.py"
+    cd "${BASEPATH}"
     if [[ $# -eq 1 ]]; then
         uv run ${SCRIPT} "$1"
     elif [[ $# -eq 2 ]]; then
@@ -63,6 +64,7 @@ function summarise() {
     else
         echo "Usage: summarise <'url'> ['prompt']"
     fi
+    cd -
 }
 ```
 

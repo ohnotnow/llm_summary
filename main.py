@@ -8,7 +8,6 @@ from pydantic_ai import Agent
 from youtube_transcript_api import YouTubeTranscriptApi
 import sys
 import prompts
-import costing
 import re
 
 def is_cooking_recipe(text: str) -> bool:
@@ -60,7 +59,7 @@ def is_cooking_recipe(text: str) -> bool:
         f"TEXT:\n{snippet}\n\nAnswer: "
     )
     classifier_agent = Agent(
-        'openai:gpt-4o-mini',
+        'openai:gpt-5-mini',
         result_type=str,
     )
     llm_response = classifier_agent.run_sync(prompt).data.strip().upper()
@@ -110,9 +109,11 @@ def get_transcript_from_youtube(url: str) -> str:
     video_id = url.split('watch?v=')[-1]
     text = ""
     try:
-        transcript_list = YouTubeTranscriptApi.list_transcripts(video_id)
-        transcript = transcript_list.find_transcript(['en'])
-        text = " ".join([i['text'] for i in transcript.fetch()])
+        ytt_api = YouTubeTranscriptApi()
+        fetched_transcript = ytt_api.fetch(video_id)
+        text = ""
+        for snippet in fetched_transcript:
+            text += snippet.text
     except:
         print(f"Could not get transcript for {url}")
         exit(1)
@@ -129,12 +130,11 @@ def get_text_from_url(url: str) -> str:
 
 def summarise_text(text: str, prompt: str) -> tuple[str, float]:
     summary_agent = Agent(
-        'openai:gpt-4o-mini',
-        result_type=str,
+        'openai:gpt-5-mini',
     )
     prompt = prompt.format(text=text)
     result = summary_agent.run_sync(prompt)
-    return result.data, costing.get_cost('openai:gpt-4o-mini', result.cost())
+    return result.output, 0
 
 def summarise_url(url: str, user_prompt: str) -> str:
     text, content_type = get_text_from_url(url)
